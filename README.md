@@ -39,12 +39,17 @@ The backend server runs on `http://localhost:5000` by default.
    cd ../frontend
    ```
 
-2. **Install dependencies:**
+2. **Installation:**
    ```sh
+   npx create-react-app human-data-v
+   cd human-data-v
    npm install axios chart.js react-chartjs-2 heatmap.js 
    ```
 
-3. **Start the React application:**
+3. **Update src folder:**
+   Replace the auto-created src folder with Github src folder
+   
+4. **Start the React application:**
    ```sh
    npm start
    ```
