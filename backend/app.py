@@ -39,5 +39,38 @@ def publish_data():
     save_to_db(data)
     return jsonify({'status': 'success'}), 200
 
+@app.route('/api/data', methods=['GET'])
+def get_data():
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM human_data")
+    rows = cursor.fetchall()
+    data = []
+    for row in rows:
+        data.append({
+            'instance_id': row[0],
+            'timestamp': row[1],
+            'pos_x': row[2],
+            'pos_y': row[3]
+        })
+    return jsonify(data)
+
+@app.route('/api/heatmap', methods=['GET'])
+def get_heatmap():
+    cursor = conn.cursor()
+    cursor.execute('''
+        SELECT pos_x, pos_y, COUNT(*) as count
+        FROM human_data
+        GROUP BY pos_x, pos_y
+    ''')
+    rows = cursor.fetchall()
+    heatmap_data = []
+    for row in rows:
+        heatmap_data.append({
+            'pos_x': row[0],
+            'pos_y': row[1],
+            'count': row[2]
+        })
+    return jsonify(heatmap_data)
+    
 if __name__ == '__main__':
     app.run(debug=True)
