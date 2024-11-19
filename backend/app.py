@@ -41,8 +41,18 @@ def publish_data():
 
 @app.route('/api/data', methods=['GET'])
 def get_data():
+    option = request.args.get('option')
+    timeframe = request.args.get('timeframe')
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM human_data")
+    query = "SELECT * FROM human_data WHERE 1=1"
+    
+    if option:
+        query += f" AND instance_id = '{option}'"
+    if timeframe:
+        # Assuming timeframe is in hours, adjust as needed
+        query += f" AND timestamp >= datetime('now', '-{timeframe} hours')"
+    
+    cursor.execute(query)
     rows = cursor.fetchall()
     data = []
     for row in rows:
@@ -56,12 +66,21 @@ def get_data():
 
 @app.route('/api/heatmap', methods=['GET'])
 def get_heatmap():
+    timeframe = request.args.get('timeframe')
     cursor = conn.cursor()
-    cursor.execute('''
+    query = '''
         SELECT pos_x, pos_y, COUNT(*) as count
         FROM human_data
-        GROUP BY pos_x, pos_y
-    ''')
+        WHERE 1=1
+    '''
+    
+    if timeframe:
+        # Assuming timeframe is in hours, adjust as needed
+        query += f" AND timestamp >= datetime('now', '-{timeframe} hours')"
+    
+    query += " GROUP BY pos_x, pos_y"
+    
+    cursor.execute(query)
     rows = cursor.fetchall()
     heatmap_data = []
     for row in rows:
